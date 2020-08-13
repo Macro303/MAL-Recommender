@@ -1,0 +1,16 @@
+# =====Folders=====
+.idea/
+.venv/
+__pycache__/
+.vscode/
+logs/
+
+# =====Files=====
+*.iml
+*.sqlite
+*.db
+*.yaml
+*.old
+*.json
+
+# =====Project=====
