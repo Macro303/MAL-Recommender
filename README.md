@@ -4,6 +4,7 @@
 [![Version](https://img.shields.io/github/tag-pre/Macro303/MAL-Recommender.svg?label=version&style=flat-square)](https://github.com/Macro303/MAL-Recommender/releases)
 [![Issues](https://img.shields.io/github/issues/Macro303/MAL-Recommender.svg?style=flat-square)](https://github.com/Macro303/MAL-Recommender/issues)
 [![Contributors](https://img.shields.io/github/contributors/Macro303/MAL-Recommender.svg?style=flat-square)](https://github.com/Macro303/MAL-Recommender/graphs/contributors)
+[![License](https://img.shields.io/github/license/Macro303/MAL-Recommender.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 *Description*
 
