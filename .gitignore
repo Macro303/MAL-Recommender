@@ -14,3 +14,4 @@ logs/
 *.json
 
 # =====Project=====
+*.csv
