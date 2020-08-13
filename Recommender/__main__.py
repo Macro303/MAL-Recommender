@@ -12,9 +12,9 @@ LOGGER = logging.getLogger(__name__)
 def get_arguments() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument('--username', type=str, default=None)
-    parser.add_argument('--score', type=float, default=6.9)
-    parser.add_argument('--recs', type=int, default=50)
-    parser.add_argument('--max', type=int, default=None)
+    parser.add_argument('--score', type=float, default=7.5)
+    parser.add_argument('--recs', type=int, default=10)
+    parser.add_argument('--max', type=int, default=100)
     return parser.parse_args()
 
 
@@ -38,17 +38,18 @@ def main():
                 recommended[rec['id']][1] += 1
             else:
                 rec_anime = api.get_anime(rec['id'])
-                if rec_anime['mean'] >= args.score:
-                    LOGGER.debug(f"{rec_anime['title']} - Recommended")
-                    recommended[rec_anime['id']] = [rec_anime, 1]
-                else:
-                    LOGGER.debug(f"{rec_anime['title']} - Not recommended")
+                if rec_anime:
+                    if rec_anime['mean'] >= args.score:
+                        LOGGER.debug(f"{rec_anime['title']} - Recommended")
+                        recommended[rec_anime['id']] = [rec_anime, 1]
+                    else:
+                        LOGGER.debug(f"{rec_anime['title']} - Not recommended")
                 sleep(2)
     LOGGER.info(f"{args.username or '@me'}'s Recommendations:")
-    with open(TOP_DIR.joinpath(f"{args.username}.csv"), 'w', encoding='UTF-8') as csv_file:
+    with open(TOP_DIR.joinpath(f"{args.username or 'me'}.csv"), 'w', encoding='UTF-8') as csv_file:
         csv_file.write('\'title\',\'alt\',\'recs\'\n')
-        recommended = {k: v for k, v in sorted(recommended.items(), key=lambda x: x[1][1])}
-        for id, details in recommended.items():
+        recommended = {k: v for k, v in sorted(recommended.items(), key=lambda x: x[1][1], reverse=True)}
+        for index, (id, details) in enumerate(recommended.items()):
             alt_title = details[0]['alternative_titles']['en'] if 'en' in details[0]['alternative_titles'] else None
             if alt_title == details[0]['title']:
                 alt_title = None
@@ -58,6 +59,8 @@ def main():
                     alt_title = None
             LOGGER.info(f" - {details[0]['title']} [{alt_title}] Recommended {details[1]}x")
             csv_file.write(f"\'{details[0]['title']}\',\'{alt_title}\',\'{details[1]}\'\n")
+            if index + 1 == args.max:
+                break
 
 
 if __name__ == '__main__':
