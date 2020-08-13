@@ -20,6 +20,8 @@ def get_new_code_verifier() -> str:
 
 
 def user_authorization() -> bool:
+    if not CONFIG['Client ID']:
+        return False
     if CONFIG['Access Token']:
         valid = authorization_check()
         if not valid:

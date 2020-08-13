@@ -13,6 +13,7 @@ def get_arguments() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument('--username', type=str, default=None)
     parser.add_argument('--score', type=float, default=6.9)
+    parser.add_argument('--recs', type=int, default=50)
     parser.add_argument('--max', type=int, default=None)
     return parser.parse_args()
 
@@ -31,16 +32,18 @@ def main():
         if not anime:
             continue
         for rec in anime['recommendations']:
-            rec_anime = api.get_anime(rec['id'])
-            if rec_anime['id'] in recommended:
-                LOGGER.debug(f"{rec_anime['title']} - Already Recommended {recommended[rec_anime['id']][1]}x")
-                recommended[rec_anime['id']][1] += 1
-            elif rec_anime['mean'] >= args.score:
-                LOGGER.debug(f"{rec_anime['title']} - Recommended")
-                recommended[rec_anime['id']] = [rec_anime, 1]
+            if rec['recs'] < args.recs:
+                continue
+            if rec['id'] in recommended:
+                recommended[rec['id']][1] += 1
             else:
-                LOGGER.debug(f"{rec_anime['title']} - Not recommended")
-            sleep(2)
+                rec_anime = api.get_anime(rec['id'])
+                if rec_anime['mean'] >= args.score:
+                    LOGGER.debug(f"{rec_anime['title']} - Recommended")
+                    recommended[rec_anime['id']] = [rec_anime, 1]
+                else:
+                    LOGGER.debug(f"{rec_anime['title']} - Not recommended")
+                sleep(2)
     LOGGER.info(f"{args.username or '@me'}'s Recommendations:")
     with open(TOP_DIR.joinpath(f"{args.username}.csv"), 'w', encoding='UTF-8') as csv_file:
         csv_file.write('\'title\',\'alt\',\'recs\'\n')
