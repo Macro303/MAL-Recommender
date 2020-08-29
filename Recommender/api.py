@@ -143,11 +143,11 @@ def search_anime(name: str, limit: int = 10) -> Optional[Dict[str, Any]]:
     LOGGER.debug(f"Retrieving anime with name: {name}")
     anime = None
     try:
-        respoonse = requests.get(f"{BASE_API_URL}/anime",
+        response = requests.get(f"{BASE_API_URL}/anime",
                                  params={'q': name, 'limit': limit},
                                  headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
-        respoonse.raise_for_status()
-        data = respoonse.json()
+        response.raise_for_status()
+        data = response.json()
         LOGGER.info(data)
     except HTTPError as err:
         LOGGER.error(f"Error: {err}")
