@@ -22,11 +22,13 @@ def get_new_code_verifier() -> str:
 def user_authorization() -> bool:
     if not CONFIG['Client ID']:
         return False
+    valid = False
     if CONFIG['Access Token']:
         valid = authorization_check()
         if not valid:
             valid = refresh_token()
-        return valid
+    if valid:
+        return
     LOGGER.info('Generating a Token')
     code_verifier = code_challenge = get_new_code_verifier()
     authorization_url = f"{BASE_AUTH_URL}/authorize?response_type=code&client_id={CONFIG['Client ID']}&code_challenge={code_challenge}"
