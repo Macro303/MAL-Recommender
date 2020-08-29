@@ -28,7 +28,7 @@ def user_authorization() -> bool:
         if not valid:
             valid = refresh_token()
     if valid:
-        return
+        return True
     LOGGER.info('Generating a Token')
     code_verifier = code_challenge = get_new_code_verifier()
     authorization_url = f"{BASE_AUTH_URL}/authorize?response_type=code&client_id={CONFIG['Client ID']}&code_challenge={code_challenge}"
