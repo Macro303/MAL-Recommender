@@ -33,7 +33,7 @@
 | `--username` | The MAL username of the Watchlist to get | @me |
 | `--min-score` | The minimum score a recommendation must have | 7.5 |
 | `--min-recs` | The minimum number of recommendations it must have | 10 |
-| `--max` | The top number of recommendations to return | 100 |
+| `--max-results` | The maximum number of recommendations to return | 100 |
 | `--debug` | | False |
 
 ## Socials

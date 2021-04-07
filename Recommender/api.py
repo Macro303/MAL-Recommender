@@ -1,10 +1,11 @@
 import logging
 import re
 import secrets
+from json.decoder import JSONDecodeError
 from typing import Dict, Any, Optional
 
 import requests
-from requests.exceptions import HTTPError
+from requests.exceptions import ConnectionError, HTTPError
 
 from Recommender import CONFIG, save_config
 
@@ -43,14 +44,17 @@ def user_authorization() -> bool:
         }
         response = requests.post(f"{BASE_AUTH_URL}/token", data=body)
         response.raise_for_status()
-        token_data = response.json()
-        CONFIG['Access Token'] = token_data['access_token']
-        CONFIG['Refresh Token'] = token_data['refresh_token']
-        save_config(CONFIG)
-        return True
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+        try:
+            token_data = response.json()
+            CONFIG['Access Token'] = token_data['access_token']
+            CONFIG['Refresh Token'] = token_data['refresh_token']
+            save_config(CONFIG)
+            return True
+        except JSONDecodeError:
+            LOGGER.critical(f'Unable to parse the response message: {response.text}')
+            return False
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_AUTH_URL}/token`")
     return False
 
 
@@ -61,9 +65,8 @@ def authorization_check() -> bool:
                                 headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
         response.raise_for_status()
         return True
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_API_URL}/users/@me`")
     return False
 
 
@@ -77,14 +80,17 @@ def refresh_token() -> bool:
         }
         response = requests.post(f"{BASE_AUTH_URL}/token", data=body)
         response.raise_for_status()
-        token_data = response.json()
-        CONFIG['Access Token'] = token_data['access_token']
-        CONFIG['Refresh Token'] = token_data['refresh_token']
-        save_config(CONFIG)
-        return True
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+        try:
+            token_data = response.json()
+            CONFIG['Access Token'] = token_data['access_token']
+            CONFIG['Refresh Token'] = token_data['refresh_token']
+            save_config(CONFIG)
+            return True
+        except JSONDecodeError:
+            LOGGER.critical(f'Unable to parse the response message: {response.text}')
+            return False
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_AUTH_URL}/token`")
     return False
 
 
@@ -96,14 +102,16 @@ def get_watchlist(username: Optional[str] = None) -> Dict[int, Any]:
                                 params={'sort': 'list_score', 'limit': 1000},
                                 headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
         response.raise_for_status()
-        data = response.json()
-        for item in data['data']:
-            watchlist[item['node']['id']] = {
-                'title': item['node']['title']
-            }
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+        try:
+            data = response.json()
+            for item in data['data']:
+                watchlist[item['node']['id']] = {
+                    'title': item['node']['title']
+                }
+        except JSONDecodeError:
+            LOGGER.critical(f'Unable to parse the response message: {response.text}')
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_API_URL}/users/{username or '@me'}/animelist`")
     return watchlist
 
 
@@ -118,23 +126,25 @@ def get_anime(mal_id: int) -> Optional[Dict[str, Any]]:
                                      'statistics'])},
                                 headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
         response.raise_for_status()
-        data = response.json()
-        anime = {
-            'id': data['id'],
-            'title': data['title'],
-            'alternative_titles': data['alternative_titles'],
-            'mean': data['mean'] if 'mean' in data else 0,
-            'rank': data['rank'] if 'rank' in data else 0,
-            'popularity': data['popularity'],
-            'media_type': data['media_type'],
-            'recommendations': [{'id': x['node']['id'], 'title': x['node']['title'], 'recs': x['num_recommendations']}
-                                for x in data['recommendations']],
-            'stats': data['statistics']
-        }
-        anime['stats']['num_scoring_users'] = data['num_scoring_users']
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+        try:
+            data = response.json()
+            anime = {
+                'id': data['id'],
+                'title': data['title'],
+                'alternative_titles': data['alternative_titles'],
+                'mean': data['mean'] if 'mean' in data else 0,
+                'rank': data['rank'] if 'rank' in data else 0,
+                'popularity': data['popularity'],
+                'media_type': data['media_type'],
+                'recommendations': [{'id': x['node']['id'], 'title': x['node']['title'], 'recs': x['num_recommendations']}
+                                    for x in data['recommendations']],
+                'stats': data['statistics']
+            }
+            anime['stats']['num_scoring_users'] = data['num_scoring_users']
+        except JSONDecodeError:
+            LOGGER.critical(f'Unable to parse the response message: {response.text}')
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_API_URL}/anime/{mal_id}`")
     return anime
 
 
@@ -146,9 +156,11 @@ def search_anime(name: str, limit: int = 10) -> Optional[Dict[str, Any]]:
                                 params={'q': name, 'limit': limit},
                                 headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
         response.raise_for_status()
-        data = response.json()
-        LOGGER.info(data)
-    except HTTPError as err:
-        LOGGER.error(f"Error: {err}")
-        LOGGER.debug(f"Request Headers: {err.request.headers}")
+        try:
+            data = response.json()
+            LOGGER.info(data)
+        except JSONDecodeError:
+            LOGGER.critical(f'Unable to parse the response message: {response.text}')
+    except (ConnectionError, HTTPError, KeyError) as err:
+        LOGGER.error(f"Unable to access: `{BASE_API_URL}/anime`")
     return anime
