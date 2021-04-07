@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import logging
 import re
 import secrets
@@ -47,7 +46,7 @@ def user_authorization() -> bool:
         token_data = response.json()
         CONFIG['Access Token'] = token_data['access_token']
         CONFIG['Refresh Token'] = token_data['refresh_token']
-        save_config()
+        save_config(CONFIG)
         return True
     except HTTPError as err:
         LOGGER.error(f"Error: {err}")
@@ -81,7 +80,7 @@ def refresh_token() -> bool:
         token_data = response.json()
         CONFIG['Access Token'] = token_data['access_token']
         CONFIG['Refresh Token'] = token_data['refresh_token']
-        save_config()
+        save_config(CONFIG)
         return True
     except HTTPError as err:
         LOGGER.error(f"Error: {err}")
@@ -144,8 +143,8 @@ def search_anime(name: str, limit: int = 10) -> Optional[Dict[str, Any]]:
     anime = None
     try:
         response = requests.get(f"{BASE_API_URL}/anime",
-                                 params={'q': name, 'limit': limit},
-                                 headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
+                                params={'q': name, 'limit': limit},
+                                headers={'Authorization': f"Bearer {CONFIG['Access Token']}"})
         response.raise_for_status()
         data = response.json()
         LOGGER.info(data)

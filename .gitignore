@@ -12,6 +12,7 @@ logs/
 *.yaml
 *.old
 *.json
+*.ini
 
 # =====Project=====
 *.csv
