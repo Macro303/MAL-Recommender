@@ -34,6 +34,7 @@
 | `--min-score` | The minimum score a recommendation must have | 7.5 |
 | `--min-recs` | The minimum number of recommendations it must have | 10 |
 | `--max-results` | The maximum number of recommendations to return | 100 |
+| `--ignore-watchlist` | Ignore recommendations that are already on your watchlist | True |
 | `--debug` | | False |
 
 ## Socials

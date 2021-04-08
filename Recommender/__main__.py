@@ -8,7 +8,8 @@ from Recommender import api, TOP_DIR
 LOGGER = logging.getLogger(__name__)
 
 
-def main(username: str = None, min_score: float = 7.5, min_recs: int = 10, max_results: int = 100, debug: bool = False):
+def main(username: str = None, min_score: float = 7.5, min_recs: int = 10, max_results: int = 100,
+         ignore_watchlist: bool = True, debug: bool = False):
     # region API/Config check
     if not api.user_authorization():
         LOGGER.error('Unable to access My Anime List API')
@@ -24,6 +25,8 @@ def main(username: str = None, min_score: float = 7.5, min_recs: int = 10, max_r
 
         # region List recommendations
         for rec in anime['recommendations']:
+            if rec['id'] in watchlist.keys() and not ignore_watchlist:  # Filter if recommendation is already on your list
+                continue
             if rec['recs'] < min_recs:  # Filter based on recommendation count
                 continue
             if rec['id'] in recommended:
@@ -64,6 +67,7 @@ def get_arguments() -> Namespace:
     parser.add_argument('--min-score', type=float, default=7.5)
     parser.add_argument('--min-recs', type=int, default=10)
     parser.add_argument('--max-results', type=int, default=100)
+    parser.add_argument('--ignore-watchlist', action='store_false')
     parser.add_argument('--debug', action='store_true')
     return parser.parse_args()
 
@@ -74,6 +78,6 @@ if __name__ == '__main__':
         PyLogger.init('Recommender', console_level=logging.DEBUG if args.debug else logging.INFO)
         LOGGER.info('Welcome to MAL Recommender')
         main(username=args.username, min_score=args.min_score, min_recs=args.min_recs, max_results=args.max_results,
-             debug=args.debug)
+             ignore_watchlist=args.ignore_watchlist, debug=args.debug)
     except KeyboardInterrupt:
         pass
