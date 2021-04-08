@@ -1,3 +1,5 @@
-PyInstaller == 4.0
-requests == 2.24.0
-PyYAML == 5.3.1
+requests == 2.25.1
+ruamel.yaml == 0.17.2
+
+# PyLogger submodule
+colorama == 0.4.4

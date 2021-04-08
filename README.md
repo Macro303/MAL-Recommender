@@ -1,19 +1,16 @@
-<img src="https://raw.githubusercontent.com/Macro303/MAL-Recommender/main/logo.png" align="left" width="120" height="120" alt="MAL Recommender Logo"/>
-
 # MAL Recommender
 [![Version](https://img.shields.io/github/tag-pre/Macro303/MAL-Recommender.svg?label=version&style=flat-square)](https://github.com/Macro303/MAL-Recommender/releases)
 [![Issues](https://img.shields.io/github/issues/Macro303/MAL-Recommender.svg?style=flat-square)](https://github.com/Macro303/MAL-Recommender/issues)
 [![Contributors](https://img.shields.io/github/contributors/Macro303/MAL-Recommender.svg?style=flat-square)](https://github.com/Macro303/MAL-Recommender/graphs/contributors)
 [![License](https://img.shields.io/github/license/Macro303/MAL-Recommender.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-*Description*
+*TODO*
 
 ## Built Using
- - [Python: 3.8.5](https://www.python.org/)
- - [pip: 20.2.2](https://pypi.org/project/pip/)
- - [PyInstaller: 4.0](https://pypi.org/project/PyInstaller/)
- - [requests: 2.24.0](https://pypi.org/project/requests/)
- - [PyYAML: 5.3.1](https://pypi.org/project/PyYAML/)
+ - [Python: 3.9.2](https://www.python.org/)
+ - [pip: 21.0.1](https://pypi.org/project/pip/)
+ - [requests: 2.25.1](https://pypi.org/project/requests/)
+ - [ruamel.yaml: 0.17.2](https://pypi.org/project/ruamel.yaml/)
 
 ## Execution
 1. Create an ID with the App Type `other` on [My Anime List (MAL)](https://myanimelist.net/apiconfig)
@@ -34,9 +31,11 @@
 | Arg | Description | Default |
 | --- | ----------- | ------- |
 | `--username` | The MAL username of the Watchlist to get | @me |
-| `--score` | Minimum score to check Recommendations against | 7.5 |
-| `--recs` | Minimum Recommendations to add to the list | 10 |
-| `--max` | Maximum amount of Recommendations returned | 100 |
+| `--min-score` | The minimum score a recommendation must have | 7.5 |
+| `--min-recs` | The minimum number of recommendations it must have | 10 |
+| `--max-results` | The maximum number of recommendations to return | 100 |
+| `--ignore-watchlist` | Ignore recommendations that are already on your watchlist | True |
+| `--debug` | | False |
 
 ## Socials
-[![Discord | The Playground](https://discord.com/api/v6/guilds/618581423070117932/widget.png?style=banner2)](https://discord.gg/nqGMeGg)
+[![Discord | The DEV Environment](https://invidget.switchblade.xyz/618581423070117932)](https://discord.gg/nqGMeGg)
